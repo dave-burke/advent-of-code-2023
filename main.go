@@ -1,6 +1,7 @@
 package main
 
 import (
+	"aoc/solutions/day01"
 	"fmt"
 	"io"
 	"log"
@@ -12,7 +13,8 @@ const year = 2022
 
 func main() {
 	content := getInput(1)
-	fmt.Println(content)
+	result := day01.Part1(content)
+	fmt.Printf("Solution: %s", result)
 }
 
 func getInput(day int) string {
