@@ -9,7 +9,7 @@ import (
 	"os"
 )
 
-const year = 2022
+const year = 2023
 
 func main() {
 	content := getInput(1)
