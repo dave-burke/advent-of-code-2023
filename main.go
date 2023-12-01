@@ -10,10 +10,12 @@ import (
 )
 
 const year = 2023
+const day = 1
+const inputBaseName = "input.txt"
 
 func main() {
-	content := getInput(1)
-	result := day01.Part1(content)
+	content := getInput(day)
+	result := day01.Part2(content)
 	fmt.Printf("Solution: %s", result)
 }
 
@@ -53,7 +55,7 @@ func readInputHttp(day int) ([]byte, error) {
 }
 
 func inputFileName(day int) string {
-	return fmt.Sprintf("solutions/day%02d/input.txt", day)
+	return fmt.Sprintf("solutions/day%02d/%s", day, inputBaseName)
 }
 
 func readInputFile(day int) ([]byte, error) {
