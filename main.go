@@ -15,7 +15,7 @@ const inputBaseName = "input.txt"
 
 func main() {
 	content := getInput(day)
-	result := day02.Part1(content)
+	result := day02.Part2(content)
 	fmt.Printf("Solution: %s", result)
 }
 

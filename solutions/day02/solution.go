@@ -86,5 +86,20 @@ func max(a, b int) int {
 }
 
 func Part2(input string) string {
-	return "todo"
+	lines := strings.Split(input, "\n")
+	result := 0
+	for _, line := range lines {
+		if len(line) == 0 {
+			continue
+		}
+		game := parseGame(line)
+		power := power(game)
+		fmt.Printf("%+v => %d\n", game, power)
+		result += power
+	}
+	return fmt.Sprintf("%d", result)
+}
+
+func power(game Game) int {
+	return game.max["red"] * game.max["green"] * game.max["blue"]
 }
