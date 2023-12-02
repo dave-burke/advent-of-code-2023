@@ -1,7 +1,7 @@
 package main
 
 import (
-	"aoc/solutions/day01"
+	"aoc/solutions/day02"
 	"fmt"
 	"io"
 	"log"
@@ -10,12 +10,12 @@ import (
 )
 
 const year = 2023
-const day = 1
-const inputBaseName = "input.txt"
+const day = 2
+const inputBaseName = "sample.txt"
 
 func main() {
 	content := getInput(day)
-	result := day01.Part2(content)
+	result := day02.Part1(content)
 	fmt.Printf("Solution: %s", result)
 }
 
