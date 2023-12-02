@@ -11,7 +11,7 @@ import (
 
 const year = 2023
 const day = 2
-const inputBaseName = "sample.txt"
+const inputBaseName = "input.txt"
 
 func main() {
 	content := getInput(day)
@@ -46,6 +46,9 @@ func readInputHttp(day int) ([]byte, error) {
 	defer resp.Body.Close()
 
 	bodyBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	if resp.StatusCode != http.StatusOK {
 		return []byte{}, fmt.Errorf(string(bodyBytes))

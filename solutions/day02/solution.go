@@ -7,16 +7,27 @@ import (
 	"strings"
 )
 
+var minVals = map[string]int{
+	"red":   12,
+	"green": 13,
+	"blue":  14,
+}
+
 func Part1(input string) string {
 	lines := strings.Split(input, "\n")
+	result := 0
 	for _, line := range lines {
 		if len(line) == 0 {
 			continue
 		}
 		game := parseGame(line)
-		fmt.Printf("%+v\n", game)
+		isPossible := checkGame(game)
+		fmt.Printf("%+v => %t\n", game, isPossible)
+		if isPossible {
+			result += game.id
+		}
 	}
-	return "todo"
+	return fmt.Sprintf("%d", result)
 }
 
 type Game struct {
@@ -56,6 +67,15 @@ func parseGame(line string) Game {
 	}
 
 	return result
+}
+
+func checkGame(game Game) bool {
+	for color, min := range minVals {
+		if game.max[color] > min {
+			return false
+		}
+	}
+	return true
 }
 
 func max(a, b int) int {
