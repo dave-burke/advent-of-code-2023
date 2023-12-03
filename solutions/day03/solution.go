@@ -46,7 +46,6 @@ func Part1() string {
 		sum += partNumber
 	}
 
-	// TODO 400550 is too low
 	return fmt.Sprintf("%d", sum)
 }
 
