@@ -125,3 +125,29 @@ func readSessionFile() string {
 	}
 	return string(content)
 }
+
+func ReadSampleAsGrid(day int) [][]rune {
+	return readFileAsGrid(sampleFileName(day))
+}
+
+func ReadInputAsGrid(day int) [][]rune {
+	downloadInputIfNeeded(day)
+	return readFileAsGrid(inputFileName(day))
+}
+
+func readFileAsGrid(path string) [][]rune {
+	lines := readFileAsLines(path)
+
+	if lines[len(lines)-1] == "" {
+		// Remove last line if it's empty
+		lines = lines[:len(lines)-1]
+	}
+
+	result := make([][]rune, len(lines))
+
+	for i, line := range lines {
+		result[i] = []rune(line)
+	}
+
+	return result
+}
