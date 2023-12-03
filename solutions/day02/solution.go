@@ -1,6 +1,7 @@
 package day02
 
 import (
+	"aoc/utils/aocasync"
 	"aoc/utils/aocinput"
 	"fmt"
 	"log"
@@ -16,19 +17,23 @@ var minVals = map[string]int{
 
 func Part1() string {
 	lines := aocinput.ReadInputAsChannel(2)
-	result := 0
-	for _, line := range lines {
-		if len(line) == 0 {
-			continue
-		}
+
+	results := aocasync.MapLinesAsync[int](lines, func(line string) int {
 		game := parseGame(line)
 		isPossible := checkGame(game)
-		fmt.Printf("%+v => %t\n", game, isPossible)
+		log.Printf("%+v => %t\n", game, isPossible)
 		if isPossible {
-			result += game.id
+			return game.id
+		} else {
+			return 0
 		}
+	})
+
+	sum := 0
+	for result := range results {
+		sum += result
 	}
-	return fmt.Sprintf("%d", result)
+	return fmt.Sprintf("%d", sum)
 }
 
 type Game struct {
@@ -87,18 +92,18 @@ func max(a, b int) int {
 }
 
 func Part2() string {
-	lines := aocinput.ReadInputAsLines(2)
-	result := 0
-	for _, line := range lines {
-		if len(line) == 0 {
-			continue
-		}
+	lines := aocinput.ReadInputAsChannel(2)
+	results := aocasync.MapLinesAsync[int](lines, func(line string) int {
 		game := parseGame(line)
 		power := power(game)
-		fmt.Printf("%+v => %d\n", game, power)
-		result += power
+		log.Printf("%+v => %d\n", game, power)
+		return power
+	})
+	sum := 0
+	for result := range results {
+		sum += result
 	}
-	return fmt.Sprintf("%d", result)
+	return fmt.Sprintf("%d", sum)
 }
 
 func power(game Game) int {
