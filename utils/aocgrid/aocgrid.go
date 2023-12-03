@@ -1,8 +1,9 @@
 package aocgrid
 
-import "fmt"
-
-type Grid [][]rune
+import (
+	"errors"
+	"fmt"
+)
 
 type Point struct {
 	row int
@@ -49,6 +50,8 @@ func (p Point) bottomRight() Point {
 	return Point{p.row + 1, p.col + 1}
 }
 
+type Grid [][]rune
+
 func (g Grid) GetAt(p Point) (rune, error) {
 	if g.isInBounds(p) {
 		return g[p.row][p.col], nil
@@ -59,6 +62,10 @@ func (g Grid) GetAt(p Point) (rune, error) {
 
 func (g Grid) isInBounds(p Point) bool {
 	return (p.row >= 0 && p.row < len(g)) && (p.col >= 0 && p.col < len(g[p.row]))
+}
+
+func (g Grid) size() int {
+	return len(g.AllPoints())
 }
 
 func (g Grid) AllPoints() []Point {
@@ -91,4 +98,38 @@ func (g Grid) Neighbors(p Point) []rune {
 		}
 	}
 	return validNeighbors
+}
+
+type Cursor struct {
+	grid     Grid
+	position Point
+}
+
+func NewCursor(grid Grid) Cursor {
+	return Cursor{
+		grid,
+		Point{0, 0},
+	}
+}
+
+func (c Cursor) Next() (Cursor, error) {
+	pos := c.position
+	next := Point{pos.row, pos.col + 1}
+	if c.grid.isInBounds(next) {
+		return Cursor{c.grid, next}, nil
+	}
+	next = Point{pos.row + 1, 0}
+	if c.grid.isInBounds(next) {
+		return Cursor{c.grid, next}, nil
+	}
+	return Cursor{}, errors.New("no more elements")
+}
+
+func (c Cursor) GetValue() rune {
+	value, err := c.grid.GetAt(c.position)
+	if err != nil {
+		// Should never happen
+		panic(err)
+	}
+	return value
 }
