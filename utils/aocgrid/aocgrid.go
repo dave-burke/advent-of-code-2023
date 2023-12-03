@@ -44,7 +44,11 @@ func (p Point) bottomRight() Point {
 
 type Grid [][]rune
 
-func (g Grid) GetAt(p Point) (rune, error) {
+func (g Grid) CursorAt(row, col int) Cursor {
+	return Cursor{g, Point{row, col}}
+}
+
+func (g Grid) pointAt(p Point) (rune, error) {
 	if g.isInBounds(p) {
 		return g[p.Row][p.Col], nil
 	} else {
@@ -161,7 +165,7 @@ func (c Cursor) WalkDownRight() (Cursor, error) {
 }
 
 func (c Cursor) GetValue() rune {
-	value, err := c.Grid.GetAt(c.Position)
+	value, err := c.Grid.pointAt(c.Position)
 	if err != nil {
 		// Should never happen
 		panic(err)
