@@ -25,3 +25,6 @@ input.txt
 
 # Ignore private session file
 session.txt
+
+# build output
+aoc
