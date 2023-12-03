@@ -97,10 +97,18 @@ type Cursor struct {
 	position Point
 }
 
-func NewCursor(grid Grid) Cursor {
+func InitCursor(grid Grid) Cursor {
 	return Cursor{
 		grid,
 		Point{0, 0},
+	}
+}
+
+func NewCursor(orig Cursor, newPos Point) (Cursor, error) {
+	if orig.grid.isInBounds(newPos) {
+		return Cursor{orig.grid, newPos}, nil
+	} else {
+		return Cursor{}, errors.New("out of bounds")
 	}
 }
 
@@ -115,6 +123,46 @@ func (c Cursor) Next() (Cursor, error) {
 		return Cursor{c.grid, next}, nil
 	}
 	return Cursor{}, errors.New("no more elements")
+}
+
+func (c Cursor) WalkUpLeft() (Cursor, error) {
+	newPos := c.position.topLeft()
+	return NewCursor(c, newPos)
+}
+
+func (c Cursor) WalkUp() (Cursor, error) {
+	newPos := c.position.topMiddle()
+	return NewCursor(c, newPos)
+}
+
+func (c Cursor) WalkUpRight() (Cursor, error) {
+	newPos := c.position.topRight()
+	return NewCursor(c, newPos)
+}
+
+func (c Cursor) WalkLeft() (Cursor, error) {
+	newPos := c.position.left()
+	return NewCursor(c, newPos)
+}
+
+func (c Cursor) WalkRight() (Cursor, error) {
+	newPos := c.position.right()
+	return NewCursor(c, newPos)
+}
+
+func (c Cursor) WalkDownLeft() (Cursor, error) {
+	newPos := c.position.bottomLeft()
+	return NewCursor(c, newPos)
+}
+
+func (c Cursor) WalkDown() (Cursor, error) {
+	newPos := c.position.bottomMiddle()
+	return NewCursor(c, newPos)
+}
+
+func (c Cursor) WalkDownRight() (Cursor, error) {
+	newPos := c.position.bottomRight()
+	return NewCursor(c, newPos)
 }
 
 func (c Cursor) GetValue() rune {
