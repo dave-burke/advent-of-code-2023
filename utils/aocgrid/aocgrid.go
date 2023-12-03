@@ -56,15 +56,14 @@ func (g Grid) isInBounds(p Point) bool {
 	return (p.Row >= 0 && p.Row < len(g)) && (p.Col >= 0 && p.Col < len(g[p.Row]))
 }
 
-
-func (g Grid) AllPoints() []Point {
-	allPoints := make([]Point, 0)
+func (g Grid) All() []Cursor {
+	all := make([]Cursor, 0)
 	for row, rowSlice := range g {
 		for col := range rowSlice {
-			allPoints = append(allPoints, Point{row, col})
+			all = append(all, Cursor{g, Point{row, col}})
 		}
 	}
-	return allPoints
+	return all
 }
 
 func (g Grid) Neighbors(p Point) []Cursor {
