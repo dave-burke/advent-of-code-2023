@@ -2,14 +2,14 @@ package aocgrid
 
 import "testing"
 
-var example = Grid{
+var exampleGrid = Grid{
 	{'.', 'O', '.'},
 	{'O', 'X', 'O'},
 	{'.', 'O', '.'},
 }
 
 func TestAll(t *testing.T) {
-	got := len(example.All())
+	got := len(exampleGrid.All())
 	wanted := 9
 
 	if got != wanted {
@@ -52,7 +52,7 @@ var boundsTests = []boundsTest{
 
 func TestBounds(t *testing.T) {
 	for _, test := range boundsTests {
-		got := example.isInBounds(test.point)
+		got := exampleGrid.isInBounds(test.point)
 		wanted := test.isInBounds
 
 		if got != wanted {

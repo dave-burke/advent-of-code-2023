@@ -7,19 +7,17 @@ type Cursor struct {
 	Position Point
 }
 
-func InitCursor(grid Grid) Cursor {
-	return Cursor{
-		grid,
-		Point{0, 0},
-	}
-}
-
-func NewCursor(orig Cursor, newPos Point) (Cursor, error) {
+func newCursor(orig Cursor, newPos Point) (Cursor, error) {
 	if orig.Grid.isInBounds(newPos) {
 		return Cursor{orig.Grid, newPos}, nil
 	} else {
 		return Cursor{}, errors.New("out of bounds")
 	}
+}
+
+func (c Cursor) HasNext() bool {
+	_, err := c.Next()
+	return err == nil
 }
 
 func (c Cursor) Next() (Cursor, error) {
@@ -37,42 +35,42 @@ func (c Cursor) Next() (Cursor, error) {
 
 func (c Cursor) WalkUpLeft() (Cursor, error) {
 	newPos := c.Position.topLeft()
-	return NewCursor(c, newPos)
+	return newCursor(c, newPos)
 }
 
 func (c Cursor) WalkUp() (Cursor, error) {
 	newPos := c.Position.topMiddle()
-	return NewCursor(c, newPos)
+	return newCursor(c, newPos)
 }
 
 func (c Cursor) WalkUpRight() (Cursor, error) {
 	newPos := c.Position.topRight()
-	return NewCursor(c, newPos)
+	return newCursor(c, newPos)
 }
 
 func (c Cursor) WalkLeft() (Cursor, error) {
 	newPos := c.Position.left()
-	return NewCursor(c, newPos)
+	return newCursor(c, newPos)
 }
 
 func (c Cursor) WalkRight() (Cursor, error) {
 	newPos := c.Position.right()
-	return NewCursor(c, newPos)
+	return newCursor(c, newPos)
 }
 
 func (c Cursor) WalkDownLeft() (Cursor, error) {
 	newPos := c.Position.bottomLeft()
-	return NewCursor(c, newPos)
+	return newCursor(c, newPos)
 }
 
 func (c Cursor) WalkDown() (Cursor, error) {
 	newPos := c.Position.bottomMiddle()
-	return NewCursor(c, newPos)
+	return newCursor(c, newPos)
 }
 
 func (c Cursor) WalkDownRight() (Cursor, error) {
 	newPos := c.Position.bottomRight()
-	return NewCursor(c, newPos)
+	return newCursor(c, newPos)
 }
 
 func (c Cursor) Neighbors() []Cursor {
