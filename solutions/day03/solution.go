@@ -6,38 +6,48 @@ import (
 	"fmt"
 	"log"
 	"regexp"
+	"strconv"
 )
 
 func Part1() string {
-	grid := aocgrid.Grid(aocinput.ReadSampleAsGrid(3))
+	grid := aocgrid.Grid(aocinput.ReadInputAsGrid(3))
 
-	// TODO identify strings of numbers.
-	// This line contains 467 and 114:
-	// 467..114..
+	re := regexp.MustCompile("[0-9]+")
 
-	nParts := 0
-	for _, point := range grid.AllPoints() {
-		r, err := grid.GetAt(point)
-		if err != nil {
-			continue
-		}
-		if isNumber(point, grid) && isPart(point, grid) {
-			fmt.Printf("%c at {%d, %d} is a part\n", r, point.Row(), point.Col())
-			nParts += int(r - '0')
-		} else {
-			fmt.Printf("%c at {%d, %d} is NOT a part\n", r, point.Row(), point.Col())
+	partNumbers := make([]int, 0)
+	for i, line := range grid {
+		row := string(line)
+		numbers := re.FindAllStringSubmatchIndex(row, -1)
+		log.Printf("[%d] %s => %v", i, row, numbers)
+		for _, indexes := range numbers {
+			numString := row[indexes[0]:indexes[1]]
+			if number, err := strconv.Atoi(numString); err != nil {
+				log.Printf("Oops! %s is not a number", numString)
+			} else {
+				found := false
+				for j := indexes[0]; j < indexes[1]; j++ {
+					p := aocgrid.Point{Row: i, Col: j}
+					if isPart(p, grid) {
+						log.Printf("%d IS a part", number)
+						partNumbers = append(partNumbers, number)
+						found = true
+						break
+					}
+				}
+				if !found {
+					log.Printf("%d IS NOT a part", number)
+				}
+			}
 		}
 	}
-	return fmt.Sprintf("%d", nParts)
-}
 
-func isNumber(p aocgrid.Point, g aocgrid.Grid) bool {
-	r, err := g.GetAt(p)
-	if err != nil {
-		log.Fatal(err)
+	sum := 0
+	for _, partNumber := range partNumbers {
+		sum += partNumber
 	}
-	re := regexp.MustCompile("[0-9]")
-	return re.MatchString(string(r))
+
+	// TODO 400550 is too low
+	return fmt.Sprintf("%d", sum)
 }
 
 func isPart(p aocgrid.Point, g aocgrid.Grid) bool {

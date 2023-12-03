@@ -6,62 +6,54 @@ import (
 )
 
 type Point struct {
-	row int
-	col int
-}
-
-func (p Point) Row() int {
-	return p.row
-}
-
-func (p Point) Col() int {
-	return p.col
+	Row int
+	Col int
 }
 
 func (p Point) topLeft() Point {
-	return Point{p.row - 1, p.col - 1}
+	return Point{p.Row - 1, p.Col - 1}
 }
 
 func (p Point) topMiddle() Point {
-	return Point{p.row - 1, p.col}
+	return Point{p.Row - 1, p.Col}
 }
 
 func (p Point) topRight() Point {
-	return Point{p.row - 1, p.col + 1}
+	return Point{p.Row - 1, p.Col + 1}
 }
 
 func (p Point) left() Point {
-	return Point{p.row, p.col - 1}
+	return Point{p.Row, p.Col - 1}
 }
 
 func (p Point) right() Point {
-	return Point{p.row, p.col + 1}
+	return Point{p.Row, p.Col + 1}
 }
 
 func (p Point) bottomLeft() Point {
-	return Point{p.row + 1, p.col - 1}
+	return Point{p.Row + 1, p.Col - 1}
 }
 
 func (p Point) bottomMiddle() Point {
-	return Point{p.row + 1, p.col}
+	return Point{p.Row + 1, p.Col}
 }
 
 func (p Point) bottomRight() Point {
-	return Point{p.row + 1, p.col + 1}
+	return Point{p.Row + 1, p.Col + 1}
 }
 
 type Grid [][]rune
 
 func (g Grid) GetAt(p Point) (rune, error) {
 	if g.isInBounds(p) {
-		return g[p.row][p.col], nil
+		return g[p.Row][p.Col], nil
 	} else {
-		return ' ', fmt.Errorf("{%d, %d} is not on the grid", p.row, p.col)
+		return ' ', fmt.Errorf("{%d, %d} is not on the grid", p.Row, p.Col)
 	}
 }
 
 func (g Grid) isInBounds(p Point) bool {
-	return (p.row >= 0 && p.row < len(g)) && (p.col >= 0 && p.col < len(g[p.row]))
+	return (p.Row >= 0 && p.Row < len(g)) && (p.Col >= 0 && p.Col < len(g[p.Row]))
 }
 
 func (g Grid) size() int {
@@ -114,11 +106,11 @@ func NewCursor(grid Grid) Cursor {
 
 func (c Cursor) Next() (Cursor, error) {
 	pos := c.position
-	next := Point{pos.row, pos.col + 1}
+	next := Point{pos.Row, pos.Col + 1}
 	if c.grid.isInBounds(next) {
 		return Cursor{c.grid, next}, nil
 	}
-	next = Point{pos.row + 1, 0}
+	next = Point{pos.Row + 1, 0}
 	if c.grid.isInBounds(next) {
 		return Cursor{c.grid, next}, nil
 	}
