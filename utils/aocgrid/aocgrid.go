@@ -70,7 +70,7 @@ func (g Grid) AllPoints() []Point {
 	return allPoints
 }
 
-func (g Grid) Neighbors(p Point) []rune {
+func (g Grid) Neighbors(p Point) []Cursor {
 	potentialNeighbors := []Point{
 		p.topLeft(),
 		p.topMiddle(),
@@ -82,19 +82,18 @@ func (g Grid) Neighbors(p Point) []rune {
 		p.bottomRight(),
 	}
 
-	validNeighbors := make([]rune, 3)
+	validNeighbors := make([]Cursor, 0)
 	for _, neighbor := range potentialNeighbors {
 		if g.isInBounds(neighbor) {
-			neighborRune, _ := g.GetAt(neighbor)
-			validNeighbors = append(validNeighbors, neighborRune)
+			validNeighbors = append(validNeighbors, Cursor{g, neighbor})
 		}
 	}
 	return validNeighbors
 }
 
 type Cursor struct {
-	grid     Grid
-	position Point
+	Grid     Grid
+	Position Point
 }
 
 func InitCursor(grid Grid) Cursor {
@@ -105,68 +104,68 @@ func InitCursor(grid Grid) Cursor {
 }
 
 func NewCursor(orig Cursor, newPos Point) (Cursor, error) {
-	if orig.grid.isInBounds(newPos) {
-		return Cursor{orig.grid, newPos}, nil
+	if orig.Grid.isInBounds(newPos) {
+		return Cursor{orig.Grid, newPos}, nil
 	} else {
 		return Cursor{}, errors.New("out of bounds")
 	}
 }
 
 func (c Cursor) Next() (Cursor, error) {
-	pos := c.position
+	pos := c.Position
 	next := Point{pos.Row, pos.Col + 1}
-	if c.grid.isInBounds(next) {
-		return Cursor{c.grid, next}, nil
+	if c.Grid.isInBounds(next) {
+		return Cursor{c.Grid, next}, nil
 	}
 	next = Point{pos.Row + 1, 0}
-	if c.grid.isInBounds(next) {
-		return Cursor{c.grid, next}, nil
+	if c.Grid.isInBounds(next) {
+		return Cursor{c.Grid, next}, nil
 	}
 	return Cursor{}, errors.New("no more elements")
 }
 
 func (c Cursor) WalkUpLeft() (Cursor, error) {
-	newPos := c.position.topLeft()
+	newPos := c.Position.topLeft()
 	return NewCursor(c, newPos)
 }
 
 func (c Cursor) WalkUp() (Cursor, error) {
-	newPos := c.position.topMiddle()
+	newPos := c.Position.topMiddle()
 	return NewCursor(c, newPos)
 }
 
 func (c Cursor) WalkUpRight() (Cursor, error) {
-	newPos := c.position.topRight()
+	newPos := c.Position.topRight()
 	return NewCursor(c, newPos)
 }
 
 func (c Cursor) WalkLeft() (Cursor, error) {
-	newPos := c.position.left()
+	newPos := c.Position.left()
 	return NewCursor(c, newPos)
 }
 
 func (c Cursor) WalkRight() (Cursor, error) {
-	newPos := c.position.right()
+	newPos := c.Position.right()
 	return NewCursor(c, newPos)
 }
 
 func (c Cursor) WalkDownLeft() (Cursor, error) {
-	newPos := c.position.bottomLeft()
+	newPos := c.Position.bottomLeft()
 	return NewCursor(c, newPos)
 }
 
 func (c Cursor) WalkDown() (Cursor, error) {
-	newPos := c.position.bottomMiddle()
+	newPos := c.Position.bottomMiddle()
 	return NewCursor(c, newPos)
 }
 
 func (c Cursor) WalkDownRight() (Cursor, error) {
-	newPos := c.position.bottomRight()
+	newPos := c.Position.bottomRight()
 	return NewCursor(c, newPos)
 }
 
 func (c Cursor) GetValue() rune {
-	value, err := c.grid.GetAt(c.position)
+	value, err := c.Grid.GetAt(c.Position)
 	if err != nil {
 		// Should never happen
 		panic(err)
