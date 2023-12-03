@@ -61,7 +61,16 @@ func isPart(p aocgrid.Point, g aocgrid.Grid) bool {
 }
 
 func isSymbol(r rune) bool {
-	return r == '+' || r == '*' || r == '$' || r == '#'
+	return r == '+' ||
+		r == '*' ||
+		r == '$' ||
+		r == '#' ||
+		r == '%' ||
+		r == '/' ||
+		r == '=' ||
+		r == '@' ||
+		r == '&' ||
+		r == '-'
 }
 
 func Part2() string {
