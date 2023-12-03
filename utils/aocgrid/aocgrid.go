@@ -56,9 +56,6 @@ func (g Grid) isInBounds(p Point) bool {
 	return (p.Row >= 0 && p.Row < len(g)) && (p.Col >= 0 && p.Col < len(g[p.Row]))
 }
 
-func (g Grid) size() int {
-	return len(g.AllPoints())
-}
 
 func (g Grid) AllPoints() []Point {
 	allPoints := make([]Point, 0)
