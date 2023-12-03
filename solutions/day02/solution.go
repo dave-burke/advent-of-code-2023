@@ -1,6 +1,7 @@
 package day02
 
 import (
+	"aoc/utils/aocinput"
 	"fmt"
 	"log"
 	"strconv"
@@ -13,8 +14,8 @@ var minVals = map[string]int{
 	"blue":  14,
 }
 
-func Part1(input string) string {
-	lines := strings.Split(input, "\n")
+func Part1() string {
+	lines := aocinput.ReadInputAsChannel(2)
 	result := 0
 	for _, line := range lines {
 		if len(line) == 0 {
@@ -85,8 +86,8 @@ func max(a, b int) int {
 	return b
 }
 
-func Part2(input string) string {
-	lines := strings.Split(input, "\n")
+func Part2() string {
+	lines := aocinput.ReadInputAsLines(2)
 	result := 0
 	for _, line := range lines {
 		if len(line) == 0 {

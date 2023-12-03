@@ -1,14 +1,15 @@
 package day01
 
 import (
+	"aoc/utils/aocinput"
 	"fmt"
 	"log"
 	"strconv"
 	"strings"
 )
 
-func Part1(input string) string {
-	lines := strings.Split(input, "\n")
+func Part1() string {
+	lines := aocinput.ReadInputAsLines(1)
 	nums := []int{}
 	for _, line := range lines {
 		if len(line) == 0 {
@@ -44,7 +45,7 @@ func Part1(input string) string {
 	return fmt.Sprint(sum)
 }
 
-func Part2(input string) string {
+func Part2() string {
 	numMap := map[string]int{
 		"0":     0,
 		"1":     1,
@@ -69,7 +70,7 @@ func Part2(input string) string {
 	}
 
 	nums := []int{}
-	lines := strings.Split(input, "\n")
+	lines := aocinput.ReadInputAsLines(1)
 	for _, line := range lines {
 		if len(line) == 0 {
 			continue
