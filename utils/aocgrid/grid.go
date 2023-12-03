@@ -31,24 +31,3 @@ func (g Grid) All() []Cursor {
 	}
 	return all
 }
-
-func (g Grid) Neighbors(p Point) []Cursor {
-	potentialNeighbors := []Point{
-		p.topLeft(),
-		p.topMiddle(),
-		p.topRight(),
-		p.left(),
-		p.right(),
-		p.bottomLeft(),
-		p.bottomMiddle(),
-		p.bottomRight(),
-	}
-
-	validNeighbors := make([]Cursor, 0)
-	for _, neighbor := range potentialNeighbors {
-		if g.isInBounds(neighbor) {
-			validNeighbors = append(validNeighbors, Cursor{g, neighbor})
-		}
-	}
-	return validNeighbors
-}

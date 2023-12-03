@@ -75,6 +75,28 @@ func (c Cursor) WalkDownRight() (Cursor, error) {
 	return NewCursor(c, newPos)
 }
 
+func (c Cursor) Neighbors() []Cursor {
+	p := c.Position
+	potentialNeighbors := []Point{
+		p.topLeft(),
+		p.topMiddle(),
+		p.topRight(),
+		p.right(),
+		p.bottomRight(),
+		p.bottomMiddle(),
+		p.bottomLeft(),
+		p.left(),
+	}
+
+	validNeighbors := make([]Cursor, 0)
+	for _, neighbor := range potentialNeighbors {
+		if c.Grid.isInBounds(neighbor) {
+			validNeighbors = append(validNeighbors, Cursor{c.Grid, neighbor})
+		}
+	}
+	return validNeighbors
+}
+
 func (c Cursor) GetValue() rune {
 	value, err := c.Grid.pointAt(c.Position)
 	if err != nil {

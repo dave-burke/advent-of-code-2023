@@ -49,9 +49,9 @@ func Part1() string {
 	return fmt.Sprintf("%d", sum)
 }
 
-func isPart(p aocgrid.Point, g aocgrid.Grid) bool {
-	neighbors := g.Neighbors(p)
-	for _, neighbor := range neighbors {
+func isPart(point aocgrid.Point, grid aocgrid.Grid) bool {
+	c := aocgrid.Cursor{Grid: grid, Position: point}
+	for _, neighbor := range c.Neighbors() {
 		if isSymbol(neighbor.GetValue()) {
 			return true
 		}
@@ -121,7 +121,8 @@ func Part2() string {
 }
 
 func findAdjacentStars(p aocgrid.Point, g aocgrid.Grid) []aocgrid.Point {
-	neighbors := g.Neighbors(p)
+	cursor := aocgrid.Cursor{Grid: g, Position: p}
+	neighbors := cursor.Neighbors()
 
 	neighborStars := make([]aocgrid.Point, 0)
 	for _, neighbor := range neighbors {
