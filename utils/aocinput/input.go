@@ -23,11 +23,11 @@ func ReadInputAsString(day int) string {
 }
 
 func readFileAsString(path string) string {
-	content, err := os.ReadFile(path)
+	bytes, err := os.ReadFile(path)
 	if err != nil {
 		log.Fatal(err)
 	}
-	return string(content)
+	return string(bytes)
 }
 
 func ReadSampleAsLines(day int) []string {
@@ -41,7 +41,11 @@ func ReadInputAsLines(day int) []string {
 
 func readFileAsLines(path string) []string {
 	content := readFileAsString(path)
-	return strings.Split(content, "\n")
+	lines := strings.Split(content, "\n")
+	if lines[len(lines)-1] == "" {
+		lines = lines[:len(lines)-1]
+	}
+	return lines
 }
 
 func ReadSampleAsList(day int) *list.List {
