@@ -91,7 +91,15 @@ func parseNumbers(numString string) map[int]int {
 }
 
 func Part2() string {
-	input := aocinput.ReadInputAsList(4)
+	input := aocinput.ReadSampleAsList(4)
 
+	cursor := input.Front()
+	for cursor.Next() != nil {
+		line := cursor.Value.(string)
+		card := parseCard(line)
+		score := card.Score()
+		log.Printf("%v => %d", card, score)
+		cursor = cursor.Next()
+	}
 	return fmt.Sprint(input.Len())
 }
