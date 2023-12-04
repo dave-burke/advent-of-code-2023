@@ -87,21 +87,25 @@ func parseNumbers(numString string) map[int]int {
 func Part2() string {
 	input := aocinput.ReadSampleAsList(4)
 
+	// TODO this impl causes an infinit loop
+	// TODO Read input as slice, then copy to List of Cards to avoid duplicate parsing
+
 	cursor := input.Front()
 	for cursor.Next() != nil {
 		line := cursor.Value.(string)
 		card := parseCard(line)
-		score := card.Score()
-		log.Printf("%v => %d", card, score)
+		nMatches := card.nMatches
+		log.Printf("%+v", card)
 
+		log.Printf("Moving ahead %d spaces", card.nMatches)
 		lookAhead := cursor
-		for i := 0; i < score; i++ {
+		for i := 0; i < nMatches; i++ {
 			lookAhead = lookAhead.Next()
 		}
-		for score > 0 {
+		for nMatches > 0 {
 			input.InsertAfter(lookAhead.Value, lookAhead)
 			lookAhead = lookAhead.Prev()
-			score--
+			nMatches--
 		}
 		cursor = cursor.Next()
 	}
