@@ -2,6 +2,7 @@ package aocinput
 
 import (
 	"bufio"
+	"container/list"
 	"fmt"
 	"io"
 	"log"
@@ -41,6 +42,26 @@ func ReadInputAsLines(day int) []string {
 func readFileAsLines(path string) []string {
 	content := readFileAsString(path)
 	return strings.Split(content, "\n")
+}
+
+func ReadSampleAsList(day int) *list.List {
+	return readFileAsList(sampleFileName(day))
+}
+
+func ReadInputAsList(day int) *list.List {
+	downloadInputIfNeeded(day)
+	return readFileAsList(inputFileName(day))
+}
+
+func readFileAsList(path string) *list.List {
+	lines := readFileAsLines(path)
+
+	result := list.New()
+
+	for _, line := range lines {
+		result.PushBack(line)
+	}
+	return result
 }
 
 func ReadSampleAsChannel(day int) chan string {

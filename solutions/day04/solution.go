@@ -91,5 +91,7 @@ func parseNumbers(numString string) map[int]int {
 }
 
 func Part2() string {
-	return "todo"
+	input := aocinput.ReadInputAsList(4)
+
+	return fmt.Sprint(input.Len())
 }
