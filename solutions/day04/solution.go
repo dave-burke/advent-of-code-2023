@@ -85,29 +85,25 @@ func parseNumbers(numString string) map[int]int {
 }
 
 func Part2() string {
-	input := aocinput.ReadSampleAsList(4)
+	input := aocinput.ReadInputAsLines(4)
 
-	// TODO this impl causes an infinit loop
-	// TODO Read input as slice, then copy to List of Cards to avoid duplicate parsing
-
-	cursor := input.Front()
-	for cursor.Next() != nil {
-		line := cursor.Value.(string)
-		card := parseCard(line)
-		nMatches := card.nMatches
-		log.Printf("%+v", card)
-
-		log.Printf("Moving ahead %d spaces", card.nMatches)
-		lookAhead := cursor
-		for i := 0; i < nMatches; i++ {
-			lookAhead = lookAhead.Next()
-		}
-		for nMatches > 0 {
-			input.InsertAfter(lookAhead.Value, lookAhead)
-			lookAhead = lookAhead.Prev()
-			nMatches--
-		}
-		cursor = cursor.Next()
+	copies := make([]int, len(input))
+	for i, _ := range copies {
+		copies[i] = 1
 	}
-	return fmt.Sprint(input.Len())
+
+	log.Print(copies)
+	for _, line := range input {
+		card := parseCard(line)
+		log.Printf("%s (%d)", line, card.nMatches)
+		currentCopies := copies[card.id-1] // card IDs start at 1
+		for i := 0; i < card.nMatches; i++ {
+			// card IDs starts at 1
+			copies[card.id+i] += currentCopies
+		}
+		log.Print(copies)
+	}
+
+	return fmt.Sprint(aocmath.Sum(copies))
+
 }
