@@ -99,6 +99,16 @@ func Part2() string {
 		card := parseCard(line)
 		score := card.Score()
 		log.Printf("%v => %d", card, score)
+
+		lookAhead := cursor
+		for i := 0; i < score; i++ {
+			lookAhead = lookAhead.Next()
+		}
+		for score > 0 {
+			input.InsertAfter(lookAhead.Value, lookAhead)
+			lookAhead = lookAhead.Prev()
+			score--
+		}
 		cursor = cursor.Next()
 	}
 	return fmt.Sprint(input.Len())
