@@ -17,9 +17,8 @@ func Part1() string {
 
 	gamePoints := aocasync.MapLinesAsync[int](input, func(line string) int {
 		card := parseCard(line)
-		score := scoreCard(card)
-		log.Printf("%v => %d", card, score)
-		return score
+		log.Printf("%v => %d", card, card.Score())
+		return card.Score()
 	})
 	return fmt.Sprint(aocmath.SumChan(gamePoints))
 }
@@ -28,6 +27,24 @@ type Card struct {
 	id             int
 	cardNumbers    map[int]int
 	winningNumbers map[int]int
+	score          int
+}
+
+func (card Card) Score() int {
+	if card.score != -1 {
+		return card.score
+	}
+	nMatches := 0
+	for num, count := range card.cardNumbers {
+		if _, ok := card.winningNumbers[num]; ok {
+			nMatches += count
+		}
+	}
+	if nMatches == 0 {
+		return 0
+	}
+	card.score = int(math.Pow(float64(2), float64(nMatches-1)))
+	return card.score
 }
 
 func parseCard(card string) Card {
@@ -40,7 +57,7 @@ func parseCard(card string) Card {
 	cardNumbers := parseNumbers(numbers[0])
 	winningNumbers := parseNumbers(numbers[1])
 
-	return Card{id, cardNumbers, winningNumbers}
+	return Card{id, cardNumbers, winningNumbers, -1}
 }
 
 func parseId(title string) int {
@@ -71,19 +88,6 @@ func parseNumbers(numString string) map[int]int {
 		}
 	}
 	return result
-}
-
-func scoreCard(card Card) int {
-	nMatches := 0
-	for num, count := range card.cardNumbers {
-		if _, ok := card.winningNumbers[num]; ok {
-			nMatches += count
-		}
-	}
-	if nMatches == 0 {
-		return 0
-	}
-	return int(math.Pow(float64(2), float64(nMatches-1)))
 }
 
 func Part2() string {
