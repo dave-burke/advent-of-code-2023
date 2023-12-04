@@ -5,16 +5,85 @@ import (
 	"aoc/utils/aocinput"
 	"aoc/utils/aocmath"
 	"fmt"
+	"log"
+	"math"
+	"regexp"
+	"strconv"
+	"strings"
 )
 
 func Part1() string {
-	input := aocinput.ReadSampleAsChannel(4)
+	input := aocinput.ReadInputAsChannel(4)
 
 	gamePoints := aocasync.MapLinesAsync[int](input, func(line string) int {
-		// Card 1: 41 48 83 86 17 | 83 86  6 31 17  9 48 53
-		return 0
+		card := parseCard(line)
+		score := scoreCard(card)
+		log.Printf("%v => %d", card, score)
+		return score
 	})
 	return fmt.Sprint(aocmath.SumChan(gamePoints))
+}
+
+type Card struct {
+	id             int
+	cardNumbers    map[int]int
+	winningNumbers map[int]int
+}
+
+func parseCard(card string) Card {
+	parts := strings.Split(card, ": ")
+	title := parts[0]
+
+	id := parseId(title)
+
+	numbers := strings.Split(parts[1], " | ")
+	cardNumbers := parseNumbers(numbers[0])
+	winningNumbers := parseNumbers(numbers[1])
+
+	return Card{id, cardNumbers, winningNumbers}
+}
+
+func parseId(title string) int {
+	id, err := strconv.Atoi(strings.TrimSpace(title[4:]))
+	if err != nil {
+		log.Fatal(err)
+	}
+	return id
+}
+
+var numbersRegex *regexp.Regexp = regexp.MustCompile(`\d+`)
+
+func parseNumbers(numString string) map[int]int {
+	numStrings := numbersRegex.FindAllString(numString, -1)
+
+	result := make(map[int]int, len(numStrings))
+	for _, str := range numStrings {
+		if len(str) == 0 {
+			continue
+		}
+		if num, err := strconv.Atoi(str); err != nil {
+			panic(err)
+		} else {
+			if _, ok := result[num]; !ok {
+				result[num] = 0
+			}
+			result[num]++
+		}
+	}
+	return result
+}
+
+func scoreCard(card Card) int {
+	nMatches := 0
+	for num, count := range card.cardNumbers {
+		if _, ok := card.winningNumbers[num]; ok {
+			nMatches += count
+		}
+	}
+	if nMatches == 0 {
+		return 0
+	}
+	return int(math.Pow(float64(2), float64(nMatches-1)))
 }
 
 func Part2() string {
