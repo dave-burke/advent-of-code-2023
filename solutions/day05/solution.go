@@ -5,8 +5,8 @@ import (
 	"aoc/utils/aocmath"
 	"aoc/utils/aocparse"
 	"fmt"
-	"log"
 	"strings"
+	"sync"
 )
 
 func Part1() string {
@@ -54,8 +54,8 @@ func (a almanac) traverse(seed int) (location int) {
 	temperature := a.lightToTemperature.get(light)
 	humidity := a.temperatureToHumidity.get(temperature)
 	location = a.humidityToLocation.get(humidity)
-	log.Printf("%d => %d => %d => %d => %d => %d => %d => %d",
-		seed, soil, fertilizer, water, light, temperature, humidity, location)
+	// log.Printf("%d => %d => %d => %d => %d => %d => %d => %d",
+	// 	seed, soil, fertilizer, water, light, temperature, humidity, location)
 	return
 }
 
@@ -138,15 +138,31 @@ func Part2() string {
 		groupToMap(groups[7]),
 	}
 
-	locations := make([]int, 0)
+	totalSeeds := 0
+	for _, r := range ranges {
+		totalSeeds += r.length
+	}
+
+	var wg sync.WaitGroup
+
+	locations := make(chan int)
 	for _, r := range ranges {
 		for i := r.start; i < r.start+r.length; i++ {
-			location := almanac.traverse(i)
-			locations = append(locations, location)
+			wg.Add(1)
+			go func(seed int) {
+				defer wg.Done()
+				location := almanac.traverse(seed)
+				locations <- location
+			}(i)
 		}
 	}
 
-	return fmt.Sprint(aocmath.MinInt(locations))
+	go func() {
+		wg.Wait()
+		close(locations)
+	}()
+
+	return fmt.Sprint(aocmath.MinIntChan(locations))
 }
 
 func parseSeedRanges(line string) []seedRange {

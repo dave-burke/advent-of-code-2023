@@ -27,3 +27,13 @@ func MinInt(nums []int) int {
 	}
 	return min
 }
+
+func MinIntChan(nums chan int) int {
+	min := math.MaxInt
+	for num := range nums {
+		if num < min {
+			min = num
+		}
+	}
+	return min
+}
