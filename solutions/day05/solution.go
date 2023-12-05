@@ -5,6 +5,8 @@ import (
 	"aoc/utils/aocmath"
 	"aoc/utils/aocparse"
 	"fmt"
+	"log"
+	"math"
 	"strings"
 	"sync"
 )
@@ -142,24 +144,49 @@ func Part2() string {
 	for _, r := range ranges {
 		totalSeeds += r.length
 	}
+	hundredth := int(math.Max(math.Floor(float64(totalSeeds)/100), 1))
+	log.Printf("1%% of seeds is about %d", hundredth)
 
-	var wg sync.WaitGroup
+	var inWg sync.WaitGroup
+	var progressWg sync.WaitGroup
 
 	locations := make(chan int)
+	progress := make(chan int)
+	log.Printf("Begin processing %d total seeds", totalSeeds)
 	for _, r := range ranges {
+		log.Printf("Begin range %d (%d)", r.start, r.length)
 		for i := r.start; i < r.start+r.length; i++ {
-			wg.Add(1)
+			inWg.Add(1)
+			progressWg.Add(1)
 			go func(seed int) {
-				defer wg.Done()
+				defer inWg.Done()
 				location := almanac.traverse(seed)
 				locations <- location
+
+				defer progressWg.Done()
+				progress <- 1
 			}(i)
 		}
 	}
 
 	go func() {
-		wg.Wait()
+		count := 0
+		for range progress {
+			count++
+			if count%hundredth == 0 {
+				percent := (float32(count) / float32(totalSeeds)) * 100
+				log.Printf("Completed %d of %d (%f%%)", count, totalSeeds, percent)
+			}
+		}
+	}()
+
+	go func() {
+		inWg.Wait()
 		close(locations)
+	}()
+	go func() {
+		progressWg.Wait()
+		close(progress)
 	}()
 
 	return fmt.Sprint(aocmath.MinIntChan(locations))
