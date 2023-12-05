@@ -121,5 +121,48 @@ func (m farmMapping) getWithin(key int) (int, bool) {
 }
 
 func Part2() string {
-	return "todo"
+	content := aocinput.ReadInputAsString(5)
+	content = strings.TrimSuffix(content, "\n")
+
+	groups := strings.Split(content, "\n\n")
+
+	ranges := parseSeedRanges(groups[0])
+
+	almanac := almanac{
+		groupToMap(groups[1]),
+		groupToMap(groups[2]),
+		groupToMap(groups[3]),
+		groupToMap(groups[4]),
+		groupToMap(groups[5]),
+		groupToMap(groups[6]),
+		groupToMap(groups[7]),
+	}
+
+	locations := make([]int, 0)
+	for _, r := range ranges {
+		for i := r.start; i < r.start+r.length; i++ {
+			location := almanac.traverse(i)
+			locations = append(locations, location)
+		}
+	}
+
+	return fmt.Sprint(aocmath.MinInt(locations))
+}
+
+func parseSeedRanges(line string) []seedRange {
+	parts := strings.Split(line, ": ")
+	rangeParts := strings.Split(parts[1], " ")
+
+	ranges := make([]seedRange, 0)
+	for i := 0; i < len(rangeParts); i += 2 {
+		start := aocparse.MustAtoi(rangeParts[i])
+		length := aocparse.MustAtoi(rangeParts[i+1])
+		ranges = append(ranges, seedRange{start, length})
+	}
+	return ranges
+}
+
+type seedRange struct {
+	start  int
+	length int
 }
