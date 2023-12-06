@@ -90,10 +90,8 @@ func readFileAsChannel(path string) <-chan string {
 		scanner := bufio.NewScanner(file)
 		for scanner.Scan() {
 			line := scanner.Text()
-			log.Printf("SEND: %s\n", line)
 			lines <- line
 		}
-		log.Println("Closing lines channel")
 		close(lines)
 	}()
 
