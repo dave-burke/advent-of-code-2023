@@ -68,16 +68,16 @@ func readFileAsList(path string) *list.List {
 	return result
 }
 
-func ReadSampleAsChannel(day int) chan string {
+func ReadSampleAsChannel(day int) <-chan string {
 	return readFileAsChannel(sampleFileName(day))
 }
 
-func ReadInputAsChannel(day int) chan string {
+func ReadInputAsChannel(day int) <-chan string {
 	downloadInputIfNeeded(day)
 	return readFileAsChannel(inputFileName(day))
 }
 
-func readFileAsChannel(path string) chan string {
+func readFileAsChannel(path string) <-chan string {
 	lines := make(chan string)
 
 	go func() {

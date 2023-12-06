@@ -10,7 +10,7 @@ func Sum(nums []int) int {
 	return sum
 }
 
-func SumChan(nums chan int) int {
+func SumChan(nums <-chan int) int {
 	sum := 0
 	for n := range nums {
 		sum += n
@@ -28,7 +28,7 @@ func MinInt(nums []int) int {
 	return min
 }
 
-func MinIntChan(nums chan int) int {
+func MinIntChan(nums <-chan int) int {
 	min := math.MaxInt
 	for num := range nums {
 		if num < min {

@@ -5,7 +5,7 @@ import (
 	"sync"
 )
 
-func MapLinesAsync[T any](lines chan string, lineHandler func(line string) T) chan T {
+func MapLinesAsync[T any](lines <-chan string, lineHandler func(line string) T) <-chan T {
 	var wg sync.WaitGroup
 	results := make(chan T)
 
