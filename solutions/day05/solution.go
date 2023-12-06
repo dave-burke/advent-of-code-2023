@@ -7,8 +7,11 @@ import (
 	"fmt"
 	"log"
 	"math"
+	"runtime"
 	"strings"
 	"sync"
+	"sync/atomic"
+	"time"
 )
 
 func Part1() string {
@@ -140,56 +143,106 @@ func Part2() string {
 		groupToMap(groups[7]),
 	}
 
+	seeds := genSeeds(almanac, ranges)
+
+	concurrency := runtime.NumCPU()
+
+	log.Printf("Processing seeds with %d mappers", concurrency)
+	outs := make([]<-chan int, 0, concurrency)
+	for i := 0; i < concurrency; i++ {
+		out := seedMapper(i, seeds, almanac)
+		outs = append(outs, out)
+	}
+
+	results := merge(outs...)
+
 	totalSeeds := 0
 	for _, r := range ranges {
 		totalSeeds += r.length
 	}
-	hundredth := int(math.Max(math.Floor(float64(totalSeeds)/100), 1))
-	log.Printf("1%% of seeds is about %d", hundredth)
 
-	var inWg sync.WaitGroup
-	var progressWg sync.WaitGroup
+	progress := progressTracker(results, totalSeeds)
 
-	locations := make(chan int)
-	progress := make(chan int)
-	log.Printf("Begin processing %d total seeds", totalSeeds)
-	for _, r := range ranges {
-		log.Printf("Begin range %d (%d)", r.start, r.length)
-		for i := r.start; i < r.start+r.length; i++ {
-			inWg.Add(1)
-			progressWg.Add(1)
-			go func(seed int) {
-				defer inWg.Done()
-				location := almanac.traverse(seed)
-				locations <- location
+	return fmt.Sprint(aocmath.MinIntChan(progress))
+}
 
-				defer progressWg.Done()
-				progress <- 1
-			}(i)
-		}
-	}
+func genSeeds(a almanac, ranges []seedRange) <-chan int {
+	out := make(chan int)
 
 	go func() {
-		count := 0
-		for range progress {
-			count++
-			if count%hundredth == 0 {
-				percent := (float32(count) / float32(totalSeeds)) * 100
-				log.Printf("Completed %d of %d (%f%%)", count, totalSeeds, percent)
+		defer close(out)
+
+		for _, r := range ranges {
+			for i := r.start; i < r.start+r.length; i++ {
+				//log.Printf("INPUT: %d", i)
+				out <- i
 			}
 		}
 	}()
 
-	go func() {
-		inWg.Wait()
-		close(locations)
-	}()
-	go func() {
-		progressWg.Wait()
-		close(progress)
-	}()
+	return out
+}
 
-	return fmt.Sprint(aocmath.MinIntChan(locations))
+func seedMapper(id int, in <-chan int, a almanac) <-chan int {
+	out := make(chan int)
+
+	go func() {
+		defer close(out)
+		for seed := range in {
+			result := a.traverse(seed)
+			//log.Printf("MAP(%d): %d => %d", id, seed, result)
+			out <- result
+		}
+	}()
+	return out
+}
+
+func progressTracker(in <-chan int, total int) <-chan int {
+	out := make(chan int)
+
+	hundredth := int(math.Max(math.Floor(float64(total)/100), 1))
+	log.Printf("1%% is about %d items", hundredth)
+
+	var count atomic.Uint32
+	go func() {
+		defer close(out)
+		start := time.Now()
+		for x := range in {
+			out <- x
+
+			count.Add(1)
+			currentValue := count.Load()
+			if int(currentValue)%hundredth == 0 {
+				percent := (float32(currentValue) / float32(total)) * 100
+				duration := time.Since(start)
+				log.Printf("Completed %d of %d (%f%%) in %v", currentValue, total, percent, duration)
+				start = time.Now()
+			}
+		}
+	}()
+	return out
+}
+
+func merge(cs ...<-chan int) (out chan int) {
+	var wg sync.WaitGroup
+	out = make(chan int)
+
+	wg.Add(len(cs))
+	for _, c := range cs {
+		go func(c <-chan int) {
+			defer wg.Done()
+			for n := range c {
+				//log.Printf("MERGE: %d", n)
+				out <- n
+			}
+		}(c)
+	}
+
+	go func() {
+		wg.Wait()
+		close(out)
+	}()
+	return out
 }
 
 func parseSeedRanges(line string) []seedRange {
