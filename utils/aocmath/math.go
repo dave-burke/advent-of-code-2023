@@ -37,3 +37,11 @@ func MinIntChan(nums <-chan int) int {
 	}
 	return min
 }
+
+func MultiplyChan(nums <-chan int) int {
+	result := 1
+	for num := range nums {
+		result *= num
+	}
+	return result
+}
