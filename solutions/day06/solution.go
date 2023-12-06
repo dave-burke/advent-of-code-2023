@@ -89,5 +89,24 @@ func parseLine(line string) []int {
 }
 
 func Part2() string {
-	return "todo"
+	lines := aocinput.ReadInputAsLines(6)
+
+	time := readDigitsOnly(lines[0])
+	dist := readDigitsOnly(lines[1])
+
+	r := race{time, dist}
+	log.Printf("%v", r)
+	wins := findWins(r)
+
+	return fmt.Sprint(len(wins))
+}
+
+func readDigitsOnly(in string) int {
+	result := make([]rune, 0)
+	for _, char := range in {
+		if strings.ContainsRune("0123456789", char) {
+			result = append(result, char)
+		}
+	}
+	return aocparse.MustAtoi(string(result))
 }
