@@ -1,7 +1,7 @@
 package main
 
 import (
-	day "aoc/solutions/day04"
+	day "aoc/solutions/day05"
 	"fmt"
 )
 
