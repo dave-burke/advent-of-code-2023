@@ -11,7 +11,7 @@ func ForEach[T any](items []T, f Consumer[T]) {
 type Mapper[I, O any] func(item I) O
 
 func Map[I, O any](items []I, f Mapper[I, O]) []O {
-	result := make([]O, len(items))
+	result := make([]O, 0, len(items))
 	for _, item := range items {
 		result = append(result, f(item))
 	}
