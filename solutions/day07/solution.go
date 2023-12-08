@@ -59,8 +59,9 @@ func Part1() string {
 }
 
 type hand struct {
-	cards string
-	bet   int
+	cards         string
+	bet           int
+	upgradedCards string
 }
 
 type byCardValue []hand
@@ -160,23 +161,21 @@ func compareHands(a, b hand) bool {
 }
 
 func Part2() string {
-	// lines := aocinput.ReadInputAsLines(7)
-	lines := aocinput.ReadSampleAsLines(7)
+	lines := aocinput.ReadInputAsLines(7)
+	// lines := aocinput.ReadSampleAsLines(7)
 	hands := aocfuncs.Map[string, hand](lines, parseHand)
 	hands = aocfuncs.Map[hand, hand](hands, upgradeCards)
 
-	sort.Sort(byCardValue(hands))
+	sort.Sort(byCardValue2(hands))
 
 	totalWinnings := 0
 	for i, hand := range hands {
 		winnings := (i + 1) * hand.bet
 		totalWinnings += winnings
-		//log.Printf("%s %d => %s => %d", hand.cards, hand.bet, handToString(identifyCards(hand.cards)), winnings)
+		log.Printf("%s => %s = %s | %d => %d",
+			hand.cards, hand.upgradedCards, handToString(identifyCards(hand.upgradedCards)),
+			hand.bet, winnings)
 	}
-	// 250545786 is too high
-	// 250621238 is too high
-	// 250682036 is too high
-	// 250439423 is wrong
 	return fmt.Sprint(totalWinnings)
 }
 
@@ -201,11 +200,7 @@ func upgradeCards(h hand) hand {
 	}
 	upgradedCards := strings.ReplaceAll(h.cards, "J", string(mostCommonRune))
 
-	if nJokers > 0 {
-		log.Printf("%s => %s", h.cards, upgradedCards)
-	}
-
-	return hand{upgradedCards, h.bet}
+	return hand{h.cards, h.bet, upgradedCards}
 }
 
 func cardToInt2(card rune) int {
@@ -227,3 +222,32 @@ func cardToInt2(card rune) int {
 	}
 	return -1
 }
+
+func compareHands2(a, b hand) bool {
+	aType := identifyCards(a.upgradedCards)
+	bType := identifyCards(b.upgradedCards)
+	if aType < bType {
+		return true
+	} else if bType < aType {
+		return false
+	} else {
+		// Ties use the un-upgraded cards, but treat J as low
+		for i, aChar := range a.cards {
+			bChar := rune(b.cards[i])
+			aValue := cardToInt2(aChar)
+			bValue := cardToInt2(bChar)
+			if aValue < bValue {
+				return true
+			} else if bValue < aValue {
+				return false
+			}
+		}
+		return true // arbitrary; they are equal
+	}
+}
+
+type byCardValue2 []hand
+
+func (a byCardValue2) Len() int           { return len(a) }
+func (a byCardValue2) Less(i, j int) bool { return compareHands2(a[i], a[j]) }
+func (a byCardValue2) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
