@@ -160,5 +160,70 @@ func compareHands(a, b hand) bool {
 }
 
 func Part2() string {
-	return "todo"
+	// lines := aocinput.ReadInputAsLines(7)
+	lines := aocinput.ReadSampleAsLines(7)
+	hands := aocfuncs.Map[string, hand](lines, parseHand)
+	hands = aocfuncs.Map[hand, hand](hands, upgradeCards)
+
+	sort.Sort(byCardValue(hands))
+
+	totalWinnings := 0
+	for i, hand := range hands {
+		winnings := (i + 1) * hand.bet
+		totalWinnings += winnings
+		//log.Printf("%s %d => %s => %d", hand.cards, hand.bet, handToString(identifyCards(hand.cards)), winnings)
+	}
+	// 250545786 is too high
+	// 250621238 is too high
+	// 250682036 is too high
+	// 250439423 is wrong
+	return fmt.Sprint(totalWinnings)
+}
+
+func upgradeCards(h hand) hand {
+	counts := countTypes(h.cards)
+
+	// most common non-joker
+	mostCommonRune := 'A'
+	mostCommonCount := 0
+	nJokers := 0
+	for k, v := range counts {
+		if k == 'J' {
+			nJokers++
+		} else if mostCommonCount < v || (mostCommonCount == v && cardToInt2(k) > cardToInt2(mostCommonRune)) {
+			// if this card is more common, or it's just as common but valued higher
+			mostCommonRune = k
+			mostCommonCount = v
+		}
+	}
+	if mostCommonCount == '1' {
+		mostCommonRune = 'A'
+	}
+	upgradedCards := strings.ReplaceAll(h.cards, "J", string(mostCommonRune))
+
+	if nJokers > 0 {
+		log.Printf("%s => %s", h.cards, upgradedCards)
+	}
+
+	return hand{upgradedCards, h.bet}
+}
+
+func cardToInt2(card rune) int {
+	switch card {
+	case 'J':
+		return 1
+	case '2', '3', '4', '5', '6', '7', '8', '9':
+		return aocparse.MustAtoi(string(card))
+	case 'T':
+		return 10
+	case 'Q':
+		return 12
+	case 'K':
+		return 13
+	case 'A':
+		return 14
+	default:
+		log.Fatalf("Unknown card: %c", card)
+	}
+	return -1
 }
