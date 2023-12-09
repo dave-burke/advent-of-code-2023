@@ -5,7 +5,6 @@ import (
 	"aoc/utils/aocmath"
 	"aoc/utils/aocparse"
 	"fmt"
-	"log"
 	"strings"
 )
 
@@ -28,6 +27,7 @@ func Part1() string {
 func GetNextIncrement(sequence []int) int {
 	diffSequence := DiffSequence(sequence)
 	incremented := Increment(diffSequence)
+	PrintDiffSequence(incremented)
 	return incremented[0][len(incremented[0])-1]
 }
 
@@ -43,15 +43,9 @@ func Increment(diffSequence [][]int) [][]int {
 }
 
 func PrintDiffSequence(diffSequence [][]int) {
-	result := ""
 	for i, sequence := range diffSequence {
-		if i != 0 {
-			result += " = > "
-		}
-		result += fmt.Sprint(sequence)
-
+		fmt.Printf("%s%v\n", strings.Repeat(" ", i), sequence)
 	}
-	log.Print(result)
 }
 
 func ParseLine(line string) []int {
@@ -67,11 +61,20 @@ func DiffSequence(sequence []int) [][]int {
 	result := make([][]int, 0)
 
 	result = append(result, sequence)
-	for sequence[len(sequence)-1] != 0 {
+	for !allZeroes(sequence) {
 		sequence = NextDiff(sequence)
 		result = append(result, sequence)
 	}
 	return result
+}
+
+func allZeroes(sequence []int) bool {
+	for _, val := range sequence {
+		if val != 0 {
+			return false
+		}
+	}
+	return true
 }
 
 func NextDiff(sequence []int) []int {
