@@ -1,11 +1,11 @@
 package main
 
 import (
-	day "aoc/solutions/day08"
+	day "aoc/solutions/day09"
 	"fmt"
 )
 
 func main() {
-	result := day.Part2()
+	result := day.Part1()
 	fmt.Printf("Solution: %s\n", result)
 }
