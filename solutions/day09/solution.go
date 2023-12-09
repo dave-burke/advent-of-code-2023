@@ -86,6 +86,34 @@ func NextDiff(sequence []int) []int {
 }
 
 func Part2() string {
-	lines := aocinput.ReadInputAsString(9)
-	return fmt.Sprint(len(lines))
+	// lines := aocinput.ReadSampleAsLines(9)
+	lines := aocinput.ReadInputAsLines(9)
+
+	nextValues := make([]int, 0, len(lines))
+	for _, line := range lines {
+		nums := ParseLine(line)
+		nextValue := GetPrevIncrement(nums)
+		nextValues = append(nextValues, nextValue)
+	}
+	sum := aocmath.Sum(nextValues)
+
+	return fmt.Sprint(sum)
+}
+
+func GetPrevIncrement(sequence []int) int {
+	diffSequence := DiffSequence(sequence)
+	decremented := Decrement(diffSequence)
+	PrintDiffSequence(decremented)
+	return decremented[0][0]
+}
+
+func Decrement(diffSequence [][]int) [][]int {
+	dec := 0
+	for i := len(diffSequence) - 1; i > 0; i-- {
+		thisSequence := diffSequence[i]
+		upSequence := diffSequence[i-1]
+		dec = upSequence[0] - thisSequence[0]
+		diffSequence[i-1] = append([]int{dec}, upSequence...)
+	}
+	return diffSequence
 }
