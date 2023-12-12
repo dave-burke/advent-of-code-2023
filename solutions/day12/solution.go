@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"log"
 	"strings"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 func Part1() string {
@@ -85,7 +87,19 @@ func countGroups(line string) []int {
 
 func CountArrangemen(line string) int {
 	rec := parseLine(line)
-	return len(rec.Groups)
+
+	nQuestions := countQuestions(rec.Springs)
+	possiblePatterns := enumeratePatterns(nQuestions)
+
+	result := 0
+	for _, possiblePattern := range possiblePatterns {
+		possibleArrangement := applyPattern(line, possiblePattern)
+		arrangementGroups := countGroups(possibleArrangement)
+		if cmp.Equal(arrangementGroups, rec.Groups) {
+			result++
+		}
+	}
+	return result
 }
 
 func Part2() string {
