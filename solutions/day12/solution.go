@@ -15,6 +15,10 @@ func Part1() string {
 	return fmt.Sprint(len(lines))
 }
 
+func CountArrangemen(line string) int {
+	return len(line)
+}
+
 func Part2() string {
 	lines := aocinput.ReadSampleAsLines(12)
 	//lines := aocinput.ReadInputAsLines(12)
@@ -23,4 +27,3 @@ func Part2() string {
 
 	return fmt.Sprint(len(lines))
 }
-
