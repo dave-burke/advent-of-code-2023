@@ -30,6 +30,21 @@ func parseLine(line string) SpringRecord {
 	return SpringRecord{parts[0], groupNums}
 }
 
+func countGroups(line string) []int {
+	counts := make([]int, 0)
+	for i := 0; i < len(line); i++ {
+		count := 0
+		for i < len(line) && line[i] == '#' {
+			count++
+			i++
+		}
+		if count > 0 {
+			counts = append(counts, count)
+		}
+	}
+	return counts
+}
+
 func CountArrangemen(line string) int {
 	rec := parseLine(line)
 	return len(rec.Groups)
