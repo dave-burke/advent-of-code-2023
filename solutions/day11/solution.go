@@ -51,26 +51,15 @@ func findGalaxies(grid aocgrid.Grid) []aocgrid.Cursor {
 }
 
 func expandGrid(grid aocgrid.Grid) aocgrid.Grid {
-	rowsToDuplicate := make([]int, 0)
-	for i := range grid {
+	for i := len(grid) - 1; i >= 0; i-- {
 		if isRowEmpty(grid, i) {
-			rowsToDuplicate = append(rowsToDuplicate, i)
+			grid = duplicateRow(grid, i)
 		}
 	}
-	log.Printf("Duplicate rows: %v", rowsToDuplicate)
-	for _, rowNum := range rowsToDuplicate {
-		grid = duplicateRow(grid, rowNum)
-	}
-
-	colsToDuplicate := make([]int, 0)
-	for i := range grid[0] {
+	for i := len(grid[0]) - 1; i >= 0; i-- {
 		if isColumnEmpty(grid, i) {
-			colsToDuplicate = append(colsToDuplicate, i)
+			grid = duplicateCol(grid, i)
 		}
-	}
-	log.Printf("Duplicate cols: %v", colsToDuplicate)
-	for _, colNum := range colsToDuplicate {
-		grid = duplicateCol(grid, colNum)
 	}
 	return grid
 }
