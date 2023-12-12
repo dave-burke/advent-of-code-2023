@@ -43,6 +43,21 @@ func enumeratePatterns(nChars int) []string {
 	}
 }
 
+func applyPattern(line string, pattern string) string {
+	patternIndex := 0
+
+	result := ""
+	for _, char := range line {
+		if char == '?' {
+			result += string(pattern[patternIndex])
+			patternIndex++
+		} else {
+			result += string(char)
+		}
+	}
+	return result
+}
+
 func countGroups(line string) []int {
 	counts := make([]int, 0)
 	for i := 0; i < len(line); i++ {

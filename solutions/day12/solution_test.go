@@ -37,6 +37,18 @@ func TestEnumeratePatterns(t *testing.T) {
 
 }
 
+func TestApplyPattern(t *testing.T) {
+	line := ".??..??...?##. 1,1,3"
+	pattern := "#.#.."
+	result := applyPattern(line, pattern)
+
+	expected := ".#...#.....##. 1,1,3"
+
+	if result != expected {
+		t.Fatalf("Expected %s but got %s", expected, result)
+	}
+}
+
 func TestParseLines(t *testing.T) {
 	testLines := map[string][]int{
 		"???.### 1,1,3":             {1, 1, 3},
