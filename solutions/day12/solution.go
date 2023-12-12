@@ -43,6 +43,16 @@ func enumeratePatterns(nChars int) []string {
 	}
 }
 
+func countQuestions(line string) int {
+	result := 0
+	for _, char := range line {
+		if char == '?' {
+			result++
+		}
+	}
+	return result
+}
+
 func applyPattern(line string, pattern string) string {
 	patternIndex := 0
 

@@ -49,6 +49,24 @@ func TestApplyPattern(t *testing.T) {
 	}
 }
 
+func TestCountQuestions(t *testing.T) {
+	testLines := map[string]int{
+		"???.### 1,1,3":             3,
+		".??..??...?##. 1,1,3":      5,
+		"?#?#?#?#?#?#?#? 1,3,1,6":   8,
+		"????.#...#... 4,1,1":       4,
+		"????.######..#####. 1,6,5": 4,
+		"?###???????? 3,2,1":        9,
+	}
+	for line, expected := range testLines {
+		result := countQuestions(line)
+
+		if result != expected {
+			t.Errorf("Expected %d but got %d at line %s", expected, result, line)
+		}
+	}
+}
+
 func TestParseLines(t *testing.T) {
 	testLines := map[string][]int{
 		"???.### 1,1,3":             {1, 1, 3},
