@@ -10,7 +10,8 @@ import (
 )
 
 func Part1() string {
-	grid := aocgrid.Grid(aocinput.ReadSampleAsGrid(11))
+	// grid := aocgrid.Grid(aocinput.ReadSampleAsGrid(11))
+	grid := aocgrid.Grid(aocinput.ReadInputAsGrid(11))
 	fmt.Println(grid.ToString())
 	expanded := expandGrid(grid)
 	fmt.Println(expanded.ToString())
