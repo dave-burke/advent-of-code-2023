@@ -1,10 +1,12 @@
 package day09
 
 import (
+	"aoc/utils/aocfuncs"
 	"aoc/utils/aocgrid"
 	"aoc/utils/aocinput"
 	"fmt"
 	"log"
+	"math"
 )
 
 func Part1() string {
@@ -12,8 +14,40 @@ func Part1() string {
 	fmt.Println(grid.ToString())
 	expanded := expandGrid(grid)
 	fmt.Println(expanded.ToString())
-	log.Printf("%d x %d => %d x %d", len(grid), len(grid[0]), len(expanded), len(expanded[0]))
-	return fmt.Sprint(len(grid))
+	log.Printf("Expanded %d x %d => %d x %d", len(grid), len(grid[0]), len(expanded), len(expanded[0]))
+	galaxies := findGalaxies(expanded)
+
+	coords := aocfuncs.Map[aocgrid.Cursor, string](galaxies, func(item aocgrid.Cursor) string {
+		return fmt.Sprint(item.Position)
+	})
+	log.Printf("Galaxies at: %v", coords)
+
+	sum := 0
+	for i := 0; i < len(galaxies); i++ {
+		for j := i + 1; j < len(galaxies); j++ {
+			dist := calcDist(galaxies[i], galaxies[j])
+			log.Printf("%d <-> %d | %v <-> %v = %d", i, j, galaxies[i].Position, galaxies[j].Position, dist)
+			sum += dist
+		}
+	}
+
+	return fmt.Sprint(sum)
+}
+
+func calcDist(a, b aocgrid.Cursor) int {
+	colDist := math.Abs(float64(a.Position.Col) - float64(b.Position.Col))
+	rowDist := math.Abs(float64(a.Position.Row) - float64(b.Position.Row))
+	return int(colDist) + int(rowDist)
+}
+
+func findGalaxies(grid aocgrid.Grid) []aocgrid.Cursor {
+	result := make([]aocgrid.Cursor, 0)
+	for _, cursor := range grid.All() {
+		if cursor.GetValue() == '#' {
+			result = append(result, cursor)
+		}
+	}
+	return result
 }
 
 func expandGrid(grid aocgrid.Grid) aocgrid.Grid {
@@ -23,6 +57,7 @@ func expandGrid(grid aocgrid.Grid) aocgrid.Grid {
 			rowsToDuplicate = append(rowsToDuplicate, i)
 		}
 	}
+	log.Printf("Duplicate rows: %v", rowsToDuplicate)
 	for _, rowNum := range rowsToDuplicate {
 		grid = duplicateRow(grid, rowNum)
 	}
@@ -33,6 +68,7 @@ func expandGrid(grid aocgrid.Grid) aocgrid.Grid {
 			colsToDuplicate = append(colsToDuplicate, i)
 		}
 	}
+	log.Printf("Duplicate cols: %v", colsToDuplicate)
 	for _, colNum := range colsToDuplicate {
 		grid = duplicateCol(grid, colNum)
 	}
@@ -60,20 +96,18 @@ func isColumnEmpty(grid aocgrid.Grid, colNum int) bool {
 
 func duplicateRow(grid aocgrid.Grid, index int) aocgrid.Grid {
 	// won't work on last index
-	row := grid[index]
-	rowCopy := make([]rune, len(row))
-	copy(rowCopy, row)
-	grid = append(grid[0:index+1], grid[index:]...)
-	return grid
+	newGrid := append(grid[0:index+1], grid[index:]...)
+	return newGrid
 }
 
 func duplicateCol(grid aocgrid.Grid, index int) aocgrid.Grid {
 	// won't work on last index
-	for i, row := range grid {
+	newGrid := make([][]rune, 0)
+	for _, row := range grid {
 		newRow := append(row[0:index+1], row[index:]...)
-		grid[i] = newRow
+		newGrid = append(newGrid, newRow)
 	}
-	return grid
+	return newGrid
 }
 
 func Part2() string {
