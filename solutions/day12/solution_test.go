@@ -1,17 +1,37 @@
 package day12
 
-import "testing"
+import (
+	"testing"
 
-var testLines = map[string]int{
-	"???.### 1,1,3":             1,
-	".??..??...?##. 1,1,3":      4,
-	"?#?#?#?#?#?#?#? 1,3,1,6":   1,
-	"????.#...#... 4,1,1":       1,
-	"????.######..#####. 1,6,5": 4,
-	"?###???????? 3,2,1":        10,
+	"github.com/google/go-cmp/cmp"
+)
+
+func TestParseLines(t *testing.T) {
+	var testLines = map[string][]int{
+		"???.### 1,1,3":             {1, 1, 3},
+		".??..??...?##. 1,1,3":      {1, 1, 3},
+		"?#?#?#?#?#?#?#? 1,3,1,6":   {1, 3, 1, 6},
+		"????.#...#... 4,1,1":       {4, 1, 1},
+		"????.######..#####. 1,6,5": {1, 6, 5},
+		"?###???????? 3,2,1":        {3, 2, 1},
+	}
+	for line, expected := range testLines {
+		result := parseLine(line)
+
+		if !cmp.Equal(expected, result.Groups) {
+			t.Errorf("Expected %v but got %v at line %s", expected, result.Groups, line)
+		}
+	}
 }
-
 func TestCountArrangemen(t *testing.T) {
+	var testLines = map[string]int{
+		"???.### 1,1,3":             1,
+		".??..??...?##. 1,1,3":      4,
+		"?#?#?#?#?#?#?#? 1,3,1,6":   1,
+		"????.#...#... 4,1,1":       1,
+		"????.######..#####. 1,6,5": 4,
+		"?###???????? 3,2,1":        10,
+	}
 	for line, expected := range testLines {
 		result := CountArrangemen(line)
 
