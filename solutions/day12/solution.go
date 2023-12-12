@@ -30,6 +30,19 @@ func parseLine(line string) SpringRecord {
 	return SpringRecord{parts[0], groupNums}
 }
 
+func enumeratePatterns(nChars int) []string {
+	if nChars == 1 {
+		return []string{"#", "."}
+	} else {
+		results := make([]string, 0)
+		for _, pattern := range enumeratePatterns(nChars - 1) {
+			results = append(results, fmt.Sprintf("%s%s", "#", pattern))
+			results = append(results, fmt.Sprintf("%s%s", ".", pattern))
+		}
+		return results
+	}
+}
+
 func countGroups(line string) []int {
 	counts := make([]int, 0)
 	for i := 0; i < len(line); i++ {

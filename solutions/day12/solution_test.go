@@ -24,6 +24,19 @@ func TestCountGroups(t *testing.T) {
 	}
 }
 
+func TestEnumeratePatterns(t *testing.T) {
+	length := 3
+	patterns := enumeratePatterns(length)
+
+	expected := 8
+	result := len(patterns)
+
+	if result != expected {
+		t.Fatalf("Expected %d patterns, but got %d", expected, result)
+	}
+
+}
+
 func TestParseLines(t *testing.T) {
 	testLines := map[string][]int{
 		"???.### 1,1,3":             {1, 1, 3},
