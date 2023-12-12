@@ -12,12 +12,18 @@ import (
 )
 
 func Part1() string {
-	lines := aocinput.ReadSampleAsLines(12)
-	//lines := aocinput.ReadInputAsLines(12)
+	// lines := aocinput.ReadSampleAsLines(12)
+	lines := aocinput.ReadInputAsLines(12)
 
 	log.Printf("Got %d lines", len(lines))
 
-	return fmt.Sprint(len(lines))
+	sum := 0
+	for i, line := range lines {
+		log.Printf("Counting line %d", i)
+		sum += CountArrangemen(line)
+	}
+
+	return fmt.Sprint(sum)
 }
 
 type SpringRecord struct {
