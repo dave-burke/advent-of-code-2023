@@ -1,11 +1,13 @@
 package day12
 
 import (
+	"aoc/utils/aocasync"
 	"aoc/utils/aocfuncs"
 	"aoc/utils/aocinput"
 	"aoc/utils/aocparse"
 	"fmt"
 	"log"
+	"runtime"
 	"strings"
 
 	"github.com/google/go-cmp/cmp"
@@ -110,9 +112,46 @@ func CountArrangemen(line string) int {
 
 func Part2() string {
 	lines := aocinput.ReadSampleAsLines(12)
-	//lines := aocinput.ReadInputAsLines(12)
+	// lines := aocinput.ReadInputAsLines(12)
 
 	log.Printf("Got %d lines", len(lines))
 
-	return fmt.Sprint(len(lines))
+	in := make(chan string)
+	go func() {
+		defer close(in)
+		for _, line := range lines {
+			in <- line
+		}
+	}()
+
+	concurrency := runtime.NumCPU()
+	log.Printf("Processing lines with %d workers", concurrency)
+	outs := make([]<-chan int, 0, concurrency)
+	for i := 0; i < concurrency; i++ {
+		out := make(chan int)
+		go func(workerNum int) {
+			defer close(out)
+			for line := range in {
+				expandedLine := expandLine(line)
+				log.Printf("(%d) Got %s", workerNum, expandedLine)
+				out <- CountArrangemen(expandedLine)
+			}
+		}(i)
+		outs = append(outs, out)
+	}
+	results := aocasync.Merge(outs...)
+
+	sum := 0
+	for i := range results {
+		sum += i
+	}
+
+	return fmt.Sprint(sum)
+}
+
+func expandLine(line string) string {
+	parts := strings.Split(line, " ")
+	expandedSprings := strings.Repeat(parts[0], 5)
+	expandedGroups := strings.Repeat(parts[1], 5)
+	return fmt.Sprintf("%s %s", expandedSprings, expandedGroups)
 }
