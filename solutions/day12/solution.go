@@ -7,8 +7,8 @@ import (
 	"aoc/utils/aocparse"
 	"fmt"
 	"log"
-	"runtime"
 	"strings"
+	"sync"
 
 	"github.com/google/go-cmp/cmp"
 )
@@ -40,8 +40,12 @@ func parseLine(line string) SpringRecord {
 	return SpringRecord{parts[0], groupNums}
 }
 
+var patternCache sync.Map
+
 func enumeratePatterns(nChars int) []string {
-	if nChars == 1 {
+	if cached, ok := patternCache.Load(nChars); ok {
+		return cached.([]string)
+	} else if nChars == 1 {
 		return []string{"#", "."}
 	} else {
 		results := make([]string, 0)
@@ -49,6 +53,7 @@ func enumeratePatterns(nChars int) []string {
 			results = append(results, fmt.Sprintf("%s%s", "#", pattern))
 			results = append(results, fmt.Sprintf("%s%s", ".", pattern))
 		}
+		patternCache.Store(nChars, results)
 		return results
 	}
 }
@@ -112,7 +117,7 @@ func CountArrangemen(line string) int {
 
 func Part2() string {
 	lines := aocinput.ReadSampleAsLines(12)
-	// lines := aocinput.ReadInputAsLines(12)
+	//lines := aocinput.ReadInputAsLines(12)
 
 	log.Printf("Got %d lines", len(lines))
 
@@ -124,7 +129,7 @@ func Part2() string {
 		}
 	}()
 
-	concurrency := runtime.NumCPU()
+	concurrency := 1 //runtime.NumCPU()
 	log.Printf("Processing lines with %d workers", concurrency)
 	outs := make([]<-chan int, 0, concurrency)
 	for i := 0; i < concurrency; i++ {
@@ -134,7 +139,9 @@ func Part2() string {
 			for line := range in {
 				expandedLine := expandLine(line)
 				log.Printf("(%d) Got %s", workerNum, expandedLine)
-				out <- CountArrangemen(expandedLine)
+				result := CountArrangemen2(expandedLine)
+				log.Printf("(%d) Finished: %d", i, result)
+				out <- result
 			}
 		}(i)
 		outs = append(outs, out)
@@ -154,4 +161,60 @@ func expandLine(line string) string {
 	expandedSprings := strings.Repeat(parts[0], 5)
 	expandedGroups := strings.Repeat(parts[1], 5)
 	return fmt.Sprintf("%s %s", expandedSprings, expandedGroups)
+}
+
+func CountArrangemen2(line string) int {
+	rec := parseLine(line)
+
+	nQuestions := countQuestions(rec.Springs)
+	possiblePatterns := enumeratePatterns(nQuestions)
+
+	result := 0
+	for _, pattern := range possiblePatterns {
+		patternIndex := 0
+
+		possibleArrangement := ""
+		groupCounts := make([]int, 0)
+		currentGroupSize := 0
+		for i, char := range rec.Springs {
+			if char == '#' {
+				currentGroupSize++
+				possibleArrangement += "#"
+			} else if char == '.' {
+				possibleArrangement += "."
+				if currentGroupSize > 0 {
+					groupCounts = append(groupCounts, currentGroupSize)
+					currentGroupSize = 0
+					if len(groupCounts) > len(rec.Groups) || !cmp.Equal(groupCounts, rec.Groups[0:len(groupCounts)]) {
+						//log.Printf("%s cannot be the beginning of %v", possibleArrangement, rec.Groups)
+						break
+					}
+				}
+			} else if char == '?' {
+				patternChar := pattern[patternIndex]
+				if patternChar == '#' {
+					currentGroupSize++
+				} else if patternChar == '.' {
+					if currentGroupSize > 0 {
+						groupCounts = append(groupCounts, currentGroupSize)
+						currentGroupSize = 0
+						if len(groupCounts) > len(rec.Groups) || !cmp.Equal(groupCounts, rec.Groups[0:len(groupCounts)]) {
+							//log.Printf("%s cannot be the beginning of %v", possibleArrangement, rec.Groups)
+							break
+						}
+					}
+				}
+				possibleArrangement += string(patternChar)
+				patternIndex++
+			} else {
+				log.Fatalf("Invalid char %c at %d in %s", char, i, line)
+			}
+		}
+		arrangementGroups := countGroups(possibleArrangement)
+		if cmp.Equal(arrangementGroups, rec.Groups) {
+			result++
+		}
+	}
+	//log.Printf("%s => %d", line, result)
+	return result
 }
