@@ -7,6 +7,10 @@ type Cursor struct {
 	Position Point
 }
 
+func CursorsEqual(a, b Cursor) bool {
+	return pointsEqual(a.Position, b.Position)
+}
+
 func newCursor(orig Cursor, newPos Point) (Cursor, error) {
 	if orig.Grid.isInBounds(newPos) {
 		return Cursor{orig.Grid, newPos}, nil
@@ -71,6 +75,24 @@ func (c Cursor) WalkDown() (Cursor, error) {
 func (c Cursor) WalkDownRight() (Cursor, error) {
 	newPos := c.Position.bottomRight()
 	return newCursor(c, newPos)
+}
+
+func (c Cursor) Neighbors4() []Cursor {
+	p := c.Position
+	potentialNeighbors := []Point{
+		p.topMiddle(),
+		p.right(),
+		p.bottomMiddle(),
+		p.left(),
+	}
+
+	validNeighbors := make([]Cursor, 0)
+	for _, neighbor := range potentialNeighbors {
+		if c.Grid.isInBounds(neighbor) {
+			validNeighbors = append(validNeighbors, Cursor{c.Grid, neighbor})
+		}
+	}
+	return validNeighbors
 }
 
 func (c Cursor) Neighbors() []Cursor {

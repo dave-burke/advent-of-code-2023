@@ -5,6 +5,10 @@ type Point struct {
 	Col int
 }
 
+func pointsEqual(a, b Point) bool {
+	return a.Row == b.Row && a.Col == b.Col
+}
+
 func (p Point) topLeft() Point {
 	return Point{p.Row - 1, p.Col - 1}
 }
