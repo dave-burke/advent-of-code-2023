@@ -31,3 +31,11 @@ func (g Grid) All() []Cursor {
 	}
 	return all
 }
+
+func (g Grid) ToString() string {
+	result := ""
+	for _, row := range g {
+		result += string(row) + "\n"
+	}
+	return result
+}
