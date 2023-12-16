@@ -1,12 +1,14 @@
 package day04
 
 import (
+	"aoc/utils/aocasync"
 	"aoc/utils/aocinput"
 	"aoc/utils/aocmath"
 	"aoc/utils/aocparse"
 	"fmt"
 	"log"
 	"math"
+	"runtime"
 	"strings"
 	"time"
 )
@@ -147,34 +149,23 @@ func Part2Async() string {
 		groupToMap(groups[7]),
 	}
 
+	seeds := genSeeds(almanac, ranges)
+
+	concurrency := runtime.NumCPU()
+	log.Printf("Processing seeds with %d mappers", concurrency)
+	outs := make([]<-chan int, 0, concurrency)
+	for i := 0; i < concurrency; i++ {
+		out := seedMapper(i, seeds, almanac)
+		outs = append(outs, out)
+	}
+	results := aocasync.Merge(outs...)
+
 	totalSeeds := 0
 	for _, r := range ranges {
 		totalSeeds += r.length
 	}
-	hundredth := int(math.Max(math.Floor(float64(totalSeeds)/100), 1))
-	log.Printf("1%% is about %d items", hundredth)
-	done := 0
-
-	min := math.MaxInt
-	start := time.Now()
-	for _, r := range ranges {
-		for i := r.start; i < r.start+r.length; i++ {
-			seed := i
-			result := almanac.traverse(seed)
-			if result < min {
-				min = result
-			}
-			done += 1
-			if done%hundredth == 0 {
-				percent := (float32(done) / float32(totalSeeds)) * 100
-				duration := time.Since(start)
-				log.Printf("Completed %d of %d (%f%%) in %v", done, totalSeeds, percent, duration)
-				start = time.Now()
-			}
-		}
-	}
-
-	return fmt.Sprint(min)
+	progress := aocasync.ProgressTracker(results, totalSeeds)
+	return fmt.Sprint(aocmath.MinIntChan(progress))
 }
 
 func Part2() string {
