@@ -1,6 +1,7 @@
 package aocinput
 
 import (
+	"aoc/utils/aocgrid"
 	"bufio"
 	"container/list"
 	"fmt"
@@ -161,16 +162,5 @@ func ReadInputAsGrid(day int) [][]rune {
 func readFileAsGrid(path string) [][]rune {
 	lines := readFileAsLines(path)
 
-	if lines[len(lines)-1] == "" {
-		// Remove last line if it's empty
-		lines = lines[:len(lines)-1]
-	}
-
-	result := make([][]rune, len(lines))
-
-	for i, line := range lines {
-		result[i] = []rune(line)
-	}
-
-	return result
+	return aocgrid.NewGrid(lines)
 }
