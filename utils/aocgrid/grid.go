@@ -6,6 +6,20 @@ import (
 
 type Grid [][]rune
 
+func NewGrid(lines []string) Grid {
+	if lines[len(lines)-1] == "" {
+		// Remove last line if it's empty
+		lines = lines[:len(lines)-1]
+	}
+	result := make([][]rune, len(lines))
+
+	for i, line := range lines {
+		result[i] = []rune(line)
+	}
+
+	return result
+}
+
 func (g Grid) CursorAt(row, col int) Cursor {
 	return Cursor{g, Point{row, col}}
 }
