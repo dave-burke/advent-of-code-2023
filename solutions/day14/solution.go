@@ -8,20 +8,26 @@ import (
 )
 
 func Part1() string {
-	grid := aocgrid.Grid(aocinput.ReadSampleAsGrid(14))
-	//grid := aocgrid.Grid(aocinput.ReadInputAsGrid(14))
+	// grid := aocgrid.Grid(aocinput.ReadSampleAsGrid(14))
+	grid := aocgrid.Grid(aocinput.ReadInputAsGrid(14))
 
 	log.Printf("GRID:\n%s", grid.ToString())
-	for i, row := range grid {
+	DropRocks(grid)
+	log.Printf("DROPPED:\n%s", grid.ToString())
+
+	result := CalcLoad(grid)
+
+	return fmt.Sprint(result)
+}
+
+func DropRocks(g aocgrid.Grid) {
+	for i, row := range g {
 		for j, char := range row {
 			if char == 'O' {
-				DropRock(grid, grid.CursorAt(i, j))
+				DropRock(g, g.CursorAt(i, j))
 			}
 		}
 	}
-	log.Printf("DROPPED:\n%s", grid.ToString())
-
-	return fmt.Sprint(len(grid))
 }
 
 func DropRock(g aocgrid.Grid, rock aocgrid.Cursor) {
@@ -32,6 +38,23 @@ func DropRock(g aocgrid.Grid, rock aocgrid.Cursor) {
 			DropRock(g, above)
 		}
 	}
+}
+
+func CalcLoad(g aocgrid.Grid) int {
+	result := 0
+	for i, row := range g {
+		rowLoad := len(g) - i
+		rocksInRow := 0
+		for _, char := range row {
+			if char == 'O' {
+				rocksInRow++
+			}
+		}
+		totalRowLoad := rowLoad * rocksInRow
+		log.Printf("There are %d rocks in row %d, each contributing %d for a total of %d", rocksInRow, i, rowLoad, totalRowLoad)
+		result += totalRowLoad
+	}
+	return result
 }
 
 func Part2() string {
