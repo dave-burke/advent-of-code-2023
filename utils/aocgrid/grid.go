@@ -20,6 +20,10 @@ func NewGrid(lines []string) Grid {
 	return result
 }
 
+func (g Grid) SetAt(c Cursor, newValue rune) {
+	g[c.Position.Row][c.Position.Col] = newValue
+}
+
 func (g Grid) CursorAt(row, col int) Cursor {
 	return Cursor{g, Point{row, col}}
 }
