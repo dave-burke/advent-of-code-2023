@@ -6,6 +6,6 @@ import (
 )
 
 func main() {
-	result := day.Part1()
+	result := day.Part2()
 	fmt.Printf("Solution: %s\n", result)
 }
